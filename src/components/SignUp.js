@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { validate } from "./validate";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { notify } from "./toast";
 
 const SignUp = () => {
   const [data, setData] = useState({
@@ -11,11 +14,11 @@ const SignUp = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   useEffect(() => {
     setErrors(validate(data));
-    console.log(errors);
-  }, [data]);
+  }, [data, touched]);
 
   const changeHandler = (event) => {
     if (event.target.name === "isAccepted") {
@@ -23,12 +26,32 @@ const SignUp = () => {
     } else {
       setData({ ...data, [event.target.name]: event.target.value });
     }
+  };
 
+  const focusHandler = (event) => {
+    setTouched({ ...touched, [event.target.name]: true });
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    if (!Object.keys(errors).length) {
+      notify("you signed in successfully", "success");
+    } else {
+      notify("invalid data", "error");
+      setTouched({
+        name: true,
+        email: true,
+        password: true,
+        confirmPassword: true,
+        isAccepted: true,
+      });
+    }
   };
 
   return (
     <div>
-      <form>
+      <form onSubmit={submitHandler}>
         <h2>Signup</h2>
         <div>
           <label>Name</label>
@@ -37,7 +60,9 @@ const SignUp = () => {
             name="name"
             value={data.name}
             onChange={changeHandler}
+            onFocus={focusHandler}
           ></input>
+          {errors.name && touched.name && <span>{errors.name}</span>}
         </div>
         <div>
           <label>Email</label>
@@ -46,7 +71,9 @@ const SignUp = () => {
             name="email"
             value={data.email}
             onChange={changeHandler}
+            onFocus={focusHandler}
           ></input>
+          {errors.email && touched.email && <span>{errors.email}</span>}
         </div>
         <div>
           <label>Password</label>
@@ -55,7 +82,11 @@ const SignUp = () => {
             name="password"
             value={data.password}
             onChange={changeHandler}
+            onFocus={focusHandler}
           ></input>
+          {errors.password && touched.password && (
+            <span>{errors.password}</span>
+          )}
         </div>
         <div>
           <label>Confirm Password</label>
@@ -64,7 +95,11 @@ const SignUp = () => {
             name="confirmPassword"
             value={data.confirmPassword}
             onChange={changeHandler}
+            onFocus={focusHandler}
           ></input>
+          {errors.confirmPassword && touched.confirmPassword && (
+            <span>{errors.confirmPassword}</span>
+          )}
         </div>
         <div>
           <label>I accept terms of privacy policy</label>
@@ -73,13 +108,18 @@ const SignUp = () => {
             name="isAccepted"
             value={data.isAccepted}
             onChange={changeHandler}
+            onFocus={focusHandler}
           ></input>
+          {errors.isAccepted && touched.isAccepted && (
+            <span>{errors.isAccepted}</span>
+          )}
         </div>
         <div>
           <a href="#">Login</a>
           <button type="submit">Sign Up</button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

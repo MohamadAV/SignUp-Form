@@ -9,7 +9,7 @@ export const validate = (data) => {
 
   if (!data.email) {
     errors.email = "Email required";
-  } else if (!/\s+@\s+\.\s+/.test(data.email)) {
+  } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email)) {
     errors.email = "Email address is invalid";
   } else {
     delete errors.email;
